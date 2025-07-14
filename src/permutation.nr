@@ -1,6 +1,7 @@
 use crate::base4_decoding::{decode_round1, decode_round3, decode_xor};
 use crate::base4_encoding::{encode_base4, Encoded};
 use crate::bit_utils::{leftrotate_1, leftrotate_30, leftrotate_5, msg_u8_to_u32, reduce_modulo_32};
+use std::ops::WrappingAdd;
 
 // Size of the message block when packed as 8-byte integer array.
 global INT_BLOCK_SIZE: u32 = 16;
@@ -155,7 +156,7 @@ pub(crate) fn digest<let N: u32>(msg: [u8; N]) -> [u8; 20] {
         }
         c = sha1_compression(msg_u8_to_u32(block_bytes), h);
         for j in 0..5 {
-            h[j] = std::wrapping_add(h[j], c[j]);
+            h[j] = h[j].wrapping_add(c[j]);
         }
     }
 
@@ -212,7 +213,7 @@ pub(crate) fn digest_var<let N: u32>(msg: BoundedVec<u8, N>) -> [u8; 20] {
         }
         c = sha1_compression(msg_u8_to_u32(block_bytes), h);
         for j in 0..5 {
-            h[j] = std::wrapping_add(h[j], c[j]);
+            h[j] = h[j].wrapping_add(c[j]);
         }
         if (i < num_used_blocks) {
             output_h = h;

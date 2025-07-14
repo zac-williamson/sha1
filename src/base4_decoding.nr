@@ -4,14 +4,14 @@ use crate::tables::{
 };
 
 
-unconstrained fn __split_into_base4_5bit_slices(encoded: Field) -> [Field; 7] {
+unconstrained fn __split_into_base4_5bit_slices(encoded: Field) -> [u32; 7] {
     let mut acc = encoded as u128;
 
     assert_eq(acc as Field, encoded);
-    let mut slices: [Field; 7] = [0; 7];
+    let mut slices: [u32; 7] = [0; 7];
 
     for i in 0..7 {
-        slices[i] = (acc & 1023) as Field;
+        slices[i] = (acc & 1023) as u32;
         acc >>= 10;
     }
 
@@ -31,7 +31,7 @@ pub(crate) fn decode_xor(encoded: Field) -> Field {
     let mut decoded: Field = 0;
     for i in 0..7 {
         reconstructed *= 1024;
-        reconstructed += slices[6 - i];
+        reconstructed += slices[6 - i] as Field;
         decoded *= 32;
         decoded += BASE4_XOR_DECODE_5BIT_TABLE[slices[6 - i]];
     }
@@ -52,7 +52,7 @@ pub(crate) fn decode_round1(b: Field, c: Field, d: Field) -> Field {
     let mut decoded_A: Field = 0;
     for i in 0..7 {
         reconstructed_A *= 1024;
-        reconstructed_A += slices_A[6 - i];
+        reconstructed_A += slices_A[6 - i] as Field;
         decoded_A *= 32;
         decoded_A += BASE4_ROUND1_A_DECODE_5BIT_TABLE[slices_A[6 - i]];
     }
@@ -64,7 +64,7 @@ pub(crate) fn decode_round1(b: Field, c: Field, d: Field) -> Field {
     let mut decoded_B: Field = 0;
     for i in 0..7 {
         reconstructed_B *= 1024;
-        reconstructed_B += slices_B[6 - i];
+        reconstructed_B += slices_B[6 - i] as Field;
         decoded_B *= 32;
         decoded_B += BASE4_ROUND1_B_DECODE_5BIT_TABLE[slices_B[6 - i]];
     }
@@ -83,7 +83,7 @@ pub(crate) fn decode_round3(a: Field, b: Field, c: Field) -> Field {
     let mut decoded: Field = 0;
     for i in 0..7 {
         reconstructed *= 1024;
-        reconstructed += slices[6 - i];
+        reconstructed += slices[6 - i] as Field;
         decoded *= 32;
         decoded += BASE4_ROUND3_DECODE_5BIT_TABLE[slices[6 - i]];
     }
